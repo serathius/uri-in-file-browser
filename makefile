@@ -1,10 +1,11 @@
 TEST_SYSTEM_FLAGS = -isystem gtest-1.7.0/include -isystem gmock-1.7.0/include 
 TEST_I_FLAGS = -I gtest-1.7.0 -I gmock-1.7.0
+TESTS = tests/test_simple.cpp
 
 all :
 
 test : libgtest.a
-	@g++ $(TEST_SYSTEM_FLAGS) -pthread tests/test_main.cpp libgtest.a -o test.o
+	@g++ $(TEST_SYSTEM_FLAGS) -pthread tests/test_main.cpp $(TESTS) libgtest.a -o test.o
 
 libgtest.a: gmock-all.o gtest-all.o
 	@ar -rv libgtest.a gmock-all.o gtest-all.o 
