@@ -3,12 +3,13 @@ TEST_I_FLAGS = -I gtest-1.7.0 -I gmock-1.7.0
 TESTS = tests/test_simple.cpp
 SOURCES = src/main.cpp src/file_cursor.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
+CFLAGS = -std=c++11
 	
 all : $(OBJECTS)
 	@g++ $(OBJECTS) -o url-in-file-browser.o
 
 .cpp.o:
-	@g++ -c $< -o $@
+	@g++ $(CFLAGS) -c $< -o $@
 
 test : libgtest.a
 	@g++ $(TEST_SYSTEM_FLAGS) -pthread tests/test_main.cpp $(TESTS) libgtest.a -o test.o
