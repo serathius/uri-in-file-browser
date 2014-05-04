@@ -6,12 +6,12 @@
 
 class FileCursor 
 {
-private:
+    bool _eof;
     std::shared_ptr<FILE> file;
     unsigned long offset;
     
 public:
-    FileCursor(char * filename);
+    FileCursor(const char * filename);
     FileCursor(const FileCursor& orig);
     virtual ~FileCursor();
     

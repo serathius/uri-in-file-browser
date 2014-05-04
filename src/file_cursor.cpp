@@ -1,4 +1,4 @@
-#include "file_cursor.h"
+#include "../include/file_cursor.h"
 
 FileCursor::FileCursor(char * filename)
 {
