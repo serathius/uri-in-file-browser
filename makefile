@@ -1,6 +1,7 @@
 TEST_SYSTEM_FLAGS = -isystem gtest-1.7.0/include -isystem gmock-1.7.0/include 
 TEST_I_FLAGS = -I gtest-1.7.0 -I gmock-1.7.0
 TESTS = tests/test_simple.cpp
+TEST_OBJECTS = $(TESTS:.cpp=.o)
 SOURCES = src/main.cpp src/file_cursor.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 CFLAGS = -std=c++11
@@ -24,8 +25,10 @@ gtest-all.o:
 	@g++ $(TEST_SYSTEM_FLAGS) $(TEST_I_FLAGS) -c gtest-1.7.0/src/gtest-all.cc
 
 clean:
+	@-rm url-in-file-browser.o 2>/dev/null || true
 	@-rm test.o 2>/dev/null || true
 	@-rm gmock-all.o 2>/dev/null || true
 	@-rm gtest-all.o 2>/dev/null || true
 	@-rm libgtest.a 2>/dev/null || true
 	@-rm $(OBJECTS) 2>/dev/null || true
+	@-rm $(TEST_OBJECTS) 2>/dev/null || true
