@@ -7,7 +7,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 CFLAGS = -std=c++11
 	
 all : $(OBJECTS)
-	@g++ $(OBJECTS) -o url-in-file-browser.o
+	@g++ $(CFLAGS) $(OBJECTS) -o url-in-file-browser.o
 
 .cpp.o:
 	@g++ $(CFLAGS) -c $< -o $@
