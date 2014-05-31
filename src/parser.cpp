@@ -85,7 +85,7 @@ FileCursor parse_hexdigit(FileCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_digit, cursor);
     char c = get_char(cursor);
-    if('A' <= c && c <= 'F')
+    if(('A' <= c && c <= 'F') || ('a' <= c && c <= 'f'))
         return cursor;
     throw ParseError();
 }
