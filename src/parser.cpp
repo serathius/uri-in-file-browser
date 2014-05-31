@@ -16,8 +16,8 @@ catch (ParseError e)    \
 FileCursor parse_sub_delims(FileCursor cursor)
 {
     char c = cursor.get();
-    if (c == ':' || c == '/' || c == '?' || c == '#' || c == '[' || c == ']' || 
-            c =='@')
+    if(c == '!' || c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' ||
+        c == '*' || c == '+' || c == ',' || c == ';' || c == '=')
         return cursor;
     else
         throw ParseError(); 
@@ -27,8 +27,8 @@ FileCursor parse_sub_delims(FileCursor cursor)
 FileCursor parse_gen_delims(FileCursor cursor)
 {
     char c = cursor.get();
-    if(c == '!' || c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' || 
-            c == '*' || c == '+' || c == ',' || c == ';' || c == '=')
+    if (c == ':' || c == '/' || c == '?' || c == '#' || c == '[' || c == ']' ||
+            c =='@')
         return cursor;
     else
         throw ParseError();
