@@ -1,15 +1,17 @@
 #include "../include/parser.h"
 #include "../include/exceptions.h"
 
-#define IGNORE_PARSE_ERROR(X) \
-try                     \
-{                       \
-    return X(cursor);   \
-}                       \
-catch (ParseError e)    \
-{                       \
-                        \
-}                       \
+#define IGNORE_PARSE_ERROR(FUN, ARG)\
+try                                 \
+{                                   \
+    return FUN(ARG);                \
+}                                   \
+catch (ParseError e)                \
+{                                   \
+                                    \
+}                                   \
+
+
 inline char get_char(FileCursor& cursor)
 {
     char c = cursor.get();
@@ -44,8 +46,8 @@ FileCursor parse_gen_delims(FileCursor cursor)
 //   reserved      = gen-delims / sub-delims
 FileCursor parse_reserved(FileCursor cursor)
 {
-    IGNORE_PARSE_ERROR(parse_gen_delims)
-    IGNORE_PARSE_ERROR(parse_sub_delims)
+    IGNORE_PARSE_ERROR(parse_gen_delims, cursor);
+    IGNORE_PARSE_ERROR(parse_sub_delims, cursor);
     throw ParseError();
 }
 
@@ -70,8 +72,8 @@ FileCursor parse_digit(FileCursor cursor)
 //   unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
 FileCursor parse_unreserved(FileCursor cursor)
 {
-    IGNORE_PARSE_ERROR(parse_alpha)
-    IGNORE_PARSE_ERROR(parse_digit)
+    IGNORE_PARSE_ERROR(parse_alpha, cursor);
+    IGNORE_PARSE_ERROR(parse_digit, cursor);
     char c = get_char(cursor);
     if (c == '-' || c == '.' || c == '_' || c == '~')
         return cursor;
@@ -81,7 +83,7 @@ FileCursor parse_unreserved(FileCursor cursor)
 
 FileCursor parse_hexdigit(FileCursor cursor)
 {
-    IGNORE_PARSE_ERROR(parse_digit)
+    IGNORE_PARSE_ERROR(parse_digit, cursor);
     char c = get_char(cursor);
     if('A' <= c && c <= 'F')
         return cursor;
@@ -101,9 +103,9 @@ FileCursor parse_pct_encoded(FileCursor cursor)
 //   pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
 FileCursor parse_pchar(FileCursor cursor)
 {
-    IGNORE_PARSE_ERROR(parse_unreserved)
-    IGNORE_PARSE_ERROR(parse_pct_encoded)
-    IGNORE_PARSE_ERROR(parse_sub_delims)
+    IGNORE_PARSE_ERROR(parse_unreserved, cursor);
+    IGNORE_PARSE_ERROR(parse_pct_encoded, cursor);
+    IGNORE_PARSE_ERROR(parse_sub_delims, cursor);
     char c = get_char(cursor);
     if(c == ':' || c == '@')
         return cursor;
