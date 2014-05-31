@@ -380,6 +380,13 @@ FileCursor parse_h16_colon(FileCursor cursor)
         throw ParseError();
 }
 
+FileCursor parse_colon_h16(FileCursor cursor)
+{
+    if(get_char(cursor) != ':')
+        throw ParseError();  
+    return parse_h16(cursor);
+}
+
 FileCursor parse_n_h16_colon(FileCursor cursor, int n)
 {
     for (int i=0; i<n; i++)
@@ -426,45 +433,92 @@ FileCursor parse_double_colon(FileCursor cursor)
 //                 / [ *4( h16 ":" ) h16 ] "::"              ls32
 //                 / [ *5( h16 ":" ) h16 ] "::"              h16
 //                 / [ *6( h16 ":" ) h16 ] "::"
-FileCursor parse_ipv6address_case(FileCursor cursor, int n)
-{
-    if (n > 1)
-    {
-        
-        try
-        {
-            cursor = parse_h16(parse_lt_n_h16_colon(cursor, n - 2));
-        }
-        catch(ParseError)
-        {
-        }
-    }
-    if (n > 0)
-        cursor = parse_double_colon(cursor);
-    
-    if (6 - n > 0)
-        cursor = parse_n_h16_colon(cursor, 6 - n);
-    
-    if (n < 7)
-        cursor = parse_ls32(cursor);
-    else if ( n == 7)
-        cursor = parse_h16(cursor);
-    
-    return cursor;
-}
-
 FileCursor parse_ipv6address(FileCursor cursor)
 {
-    for (int i=0; i<9; i++)
+    try
+    {
+        return parse_ls32(parse_n_h16_colon(cursor, 6));
+    }
+    catch(ParseError)
+    {
+    }
+    bool h16;
+    try
+    {
+        cursor = parse_h16(cursor);
+        h16 = true;
+    }
+    catch(ParseError)
+    {
+        h16 = false;
+    }
+    
+    int n = 0;
+    for (; n<7; n++)
     {
         try
         {
-            return parse_ipv6address_case(cursor, i);
+            cursor = parse_colon_h16(cursor);
+        }
+        catch(ParseError)
+        { 
+            break;
+        }
+    }
+    cursor = parse_double_colon(cursor);
+    try
+    {
+        return parse_ls32(parse_n_h16_colon(cursor, 5 - h16));
+    }
+    catch(ParseError)
+    {
+
+    }  
+    
+    if (n <= 1)
+    {
+        try
+        {
+            return parse_ls32(parse_n_h16_colon(cursor, 3));
         }
         catch(ParseError)
         {
+            
+        }
+        
+    }
+    if (n <= 2)
+    {
+        try
+        {
+            return parse_ls32(parse_n_h16_colon(cursor, 2));
+        }
+        catch(ParseError)
+        {
+            
+        }        
+    }
+    if (n <= 3)
+    {
+        try
+        {
+            return parse_ls32(parse_n_h16_colon(cursor, 1));
+        }
+        catch(ParseError)
+        {
+            
         }
     }
+    if (n <= 4)
+    {
+        IGNORE_PARSE_ERROR(parse_ls32, cursor);
+    }
+    if (n <= 5)
+    {
+        IGNORE_PARSE_ERROR(parse_h16, cursor);
+    }
+    if (n <= 6)
+        return cursor;
     throw ParseError();
 }
 
