@@ -662,7 +662,7 @@ FileCursor parse_file(FileCursor cursor)
         try
         {
            FileCursor stop_cursor(parse_uri(cursor));
-           uri_length = stop_cursor.get_offset()- cursor.get_offset();
+           uri_length = stop_cursor.get_offset() - cursor.get_offset();
            char uri[uri_length + 1];
            cursor.gets(uri_length, uri);
            printf("%s\n", uri);
