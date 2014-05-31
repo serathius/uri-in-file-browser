@@ -612,10 +612,10 @@ FileCursor parse_authority(FileCursor cursor)
 {
     try
     {
-        FileCursor copy(parse_userinfo(cursor));
-        if(get_char(copy) != '@')
+        FileCursor cursor_copy(parse_userinfo(cursor));
+        if(get_char(cursor_copy) != '@')
             throw ParseError();
-        cursor = copy;
+        cursor = cursor_copy;
     }
     catch(ParseError)
     {
@@ -623,10 +623,10 @@ FileCursor parse_authority(FileCursor cursor)
     cursor = parse_host(cursor);
     try
     {
-        FileCursor copy2(cursor);
-        if(get_char(copy2) != ':')
+        FileCursor cursor_copy2(cursor);
+        if(get_char(cursor_copy2) != ':')
             throw ParseError();
-        cursor = parse_port(copy2);
+        cursor = parse_port(cursor_copy2);
     }
     catch(ParseError)
     {
@@ -686,18 +686,18 @@ FileCursor parse_uri(FileCursor cursor)
     cursor = parse_hier_part(cursor);
     try
     {
-        FileCursor copy(cursor);
-        if (get_char(copy) != '?')
+        FileCursor cursor_copy(cursor);
+        if (get_char(cursor_copy) != '?')
             throw ParseError();
-        cursor = parse_query_fragment(copy);
+        cursor = parse_query_fragment(cursor_copy);
     }
     catch(ParseError)
     {
     }
     try
     {
-        FileCursor copy2(cursor);
-        if (get_char(copy2) != '#')
+        FileCursor cursor_copy2(cursor);
+        if (get_char(cursor_copy2) != '#')
             throw ParseError();
         cursor = parse_query_fragment(cursor);
     }
