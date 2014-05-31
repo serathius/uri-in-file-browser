@@ -81,6 +81,7 @@ FileCursor parse_unreserved(FileCursor cursor)
         throw ParseError();
 }
 
+// hexdigit = DIGIT / 'A' - 'F' / 'a' - 'f'
 FileCursor parse_hexdigit(FileCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_digit, cursor);
