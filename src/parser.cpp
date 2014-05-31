@@ -304,7 +304,6 @@ FileCursor parse_10_99(FileCursor cursor)
 //                 / 100_199     ; 100-199
 //                 / 200_249     ; 200-249
 //                 / 250_255     ; 250-255
-
 FileCursor parse_dec_octet(FileCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_250_255, cursor);

@@ -5,7 +5,4 @@
 
 FileCursor parse_file(FileCursor cursor);
 
-FileCursor parse_uri(FileCursor cursor);
-
 #endif	/* PARSER_H */
-
