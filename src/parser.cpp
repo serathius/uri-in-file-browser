@@ -6,7 +6,7 @@ try                                 \
 {                                   \
     return FUN(ARG);                \
 }                                   \
-catch (ParseError e)                \
+catch (ParseError)                  \
 {                                   \
                                     \
 }                                   \
@@ -41,7 +41,7 @@ FileCursor parse_sub_delims(FileCursor cursor)
         c == '*' || c == '+' || c == ',' || c == ';' || c == '=')
         return cursor;
     else
-        throw ParseError(); 
+        throw ParseError();
 }
 
 //   gen-delims    = ":" / "/" / "?" / "#" / "[" / "]" / "@"
@@ -668,7 +668,7 @@ FileCursor parse_file(FileCursor cursor)
            printf("%s\n", uri);
            cursor = stop_cursor;
         }
-        catch(ParseError e)
+        catch(ParseError)
         {
             cursor.get();
         }
