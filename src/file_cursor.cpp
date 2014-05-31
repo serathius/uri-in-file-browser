@@ -30,14 +30,12 @@ unsigned long FileCursor::get_offset()
     return this->offset;
 }
 
-char * FileCursor::gets(int length) 
+void FileCursor::gets(int length, char * str) 
 {
-    char* str = new char(length+1);
     fseek(this->file.get(), this->offset, SEEK_SET);
     this->offset += length;
     fgets(str, length+1, this->file.get());
     this->_eof = feof(this->file.get());
-    return str;
 }
 
 char FileCursor::get() 

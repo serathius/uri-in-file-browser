@@ -17,7 +17,7 @@ public:
     
     virtual bool eof();
     virtual unsigned long get_offset();
-    virtual char * gets(int length);
+    virtual void gets(int length, char * str);
     virtual char get();
 };
 
