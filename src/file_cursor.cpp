@@ -40,9 +40,8 @@ void FileCursor::gets(int length, char * str)
 
 char FileCursor::get() 
 {
-    char c;
     fseek(this->file.get(), this->offset++, SEEK_SET);
-    c = getc(this->file.get());
+    char c = getc(this->file.get());
     this->_eof = feof(this->file.get());
     return c;
 }
