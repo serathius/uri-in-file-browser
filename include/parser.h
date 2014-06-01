@@ -1,8 +1,8 @@
 #ifndef PARSER_H
 #define	PARSER_H
 
-#include "file_cursor.h"
+#include "text_cursor.h"
 
-void parse_file(FileCursor cursor);
+void parse_file(TextCursor cursor);
 
 #endif	/* PARSER_H */

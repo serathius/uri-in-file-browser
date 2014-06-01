@@ -24,7 +24,7 @@ while(true)                         \
     }                               \
 }                                   \
 
-inline char get_char(FileCursor& cursor)
+inline char get_char(TextCursor& cursor)
 {
     char c = cursor.get();
     if (cursor.eof())
@@ -34,7 +34,7 @@ inline char get_char(FileCursor& cursor)
 
 //   sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
 //                 / "*" / "+" / "," / ";" / "="
-FileCursor parse_sub_delims(FileCursor cursor)
+TextCursor parse_sub_delims(TextCursor cursor)
 {
     char c = get_char(cursor);
     if(c == '!' || c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' ||
@@ -45,7 +45,7 @@ FileCursor parse_sub_delims(FileCursor cursor)
 }
 
 //   gen-delims    = ":" / "/" / "?" / "#" / "[" / "]" / "@"
-FileCursor parse_gen_delims(FileCursor cursor)
+TextCursor parse_gen_delims(TextCursor cursor)
 {
     char c = get_char(cursor);
     if (c == ':' || c == '/' || c == '?' || c == '#' || c == '[' || c == ']' ||
@@ -56,14 +56,14 @@ FileCursor parse_gen_delims(FileCursor cursor)
 }
 
 //   reserved      = gen-delims / sub-delims
-FileCursor parse_reserved(FileCursor cursor)
+TextCursor parse_reserved(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_gen_delims, cursor);
     IGNORE_PARSE_ERROR(parse_sub_delims, cursor);
     throw ParseError();
 }
 
-FileCursor parse_alpha(FileCursor cursor)
+TextCursor parse_alpha(TextCursor cursor)
 {
     char c = get_char(cursor);
     if(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))
@@ -72,7 +72,7 @@ FileCursor parse_alpha(FileCursor cursor)
         throw ParseError();
 }
 
-FileCursor parse_digit(FileCursor cursor)
+TextCursor parse_digit(TextCursor cursor)
 {
     char c = get_char(cursor);
     if('0' <= c && c <= '9')
@@ -82,7 +82,7 @@ FileCursor parse_digit(FileCursor cursor)
 }
 
 //   unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
-FileCursor parse_unreserved(FileCursor cursor)
+TextCursor parse_unreserved(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_alpha, cursor);
     IGNORE_PARSE_ERROR(parse_digit, cursor);
@@ -94,7 +94,7 @@ FileCursor parse_unreserved(FileCursor cursor)
 }
 
 // hexdigit = DIGIT / 'A' - 'F' / 'a' - 'f'
-FileCursor parse_hexdigit(FileCursor cursor)
+TextCursor parse_hexdigit(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_digit, cursor);
     char c = get_char(cursor);
@@ -104,7 +104,7 @@ FileCursor parse_hexdigit(FileCursor cursor)
 }
 
 //   pct-encoded   = "%" HEXDIG HEXDIG
-FileCursor parse_pct_encoded(FileCursor cursor)
+TextCursor parse_pct_encoded(TextCursor cursor)
 {
     char c = get_char(cursor);
     if (c != '%')
@@ -114,7 +114,7 @@ FileCursor parse_pct_encoded(FileCursor cursor)
 }
 
 //   pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
-FileCursor parse_pchar(FileCursor cursor)
+TextCursor parse_pchar(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_unreserved, cursor);
     IGNORE_PARSE_ERROR(parse_pct_encoded, cursor);
@@ -127,7 +127,7 @@ FileCursor parse_pchar(FileCursor cursor)
 }
 
 //query_fragment_element = pchar / "/" / "?"
-FileCursor parse_query_fragment_element(FileCursor cursor)
+TextCursor parse_query_fragment_element(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_pchar, cursor);
     char c = get_char(cursor);
@@ -139,13 +139,13 @@ FileCursor parse_query_fragment_element(FileCursor cursor)
 
 //query         = *query_fragment_element
 //fragment      = *query_fragment_element
-FileCursor parse_query_fragment(FileCursor cursor)
+TextCursor parse_query_fragment(TextCursor cursor)
 {
     REPEAT_IGNORING(parse_query_fragment_element, cursor);
 }
 
 //   segment_nz_nc_element = unreserved / pct-encoded / sub-delims / "@" 
-FileCursor parse_segment_nz_nc_element(FileCursor cursor)
+TextCursor parse_segment_nz_nc_element(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_unreserved, cursor);
     IGNORE_PARSE_ERROR(parse_pct_encoded, cursor);
@@ -158,27 +158,27 @@ FileCursor parse_segment_nz_nc_element(FileCursor cursor)
 }
 
 // segment-nz-nc = 1*segment-nz-nc
-FileCursor parse_segment_nz_nc(FileCursor cursor)
+TextCursor parse_segment_nz_nc(TextCursor cursor)
 {
     cursor = parse_segment_nz_nc_element(cursor);
     REPEAT_IGNORING(parse_segment_nz_nc_element, cursor);
 }
 
 //  segment       = *pchar
-FileCursor parse_segment(FileCursor cursor)
+TextCursor parse_segment(TextCursor cursor)
 {
     REPEAT_IGNORING(parse_pchar, cursor);
 }
 
 //   segment-nz    = 1*pchar
-FileCursor parse_segment_nz(FileCursor cursor)
+TextCursor parse_segment_nz(TextCursor cursor)
 {
     cursor = parse_pchar(cursor);
     REPEAT_IGNORING(parse_pchar, cursor);
 }
 
 //   slash_segment = '/' segment
-FileCursor parse_slash_segment(FileCursor cursor)
+TextCursor parse_slash_segment(TextCursor cursor)
 {
     char c = get_char(cursor);
     if (c != '/')
@@ -188,13 +188,13 @@ FileCursor parse_slash_segment(FileCursor cursor)
 }
 
 //   path-abempty  = *( "/" segment )
-FileCursor parse_path_abempty(FileCursor cursor)
+TextCursor parse_path_abempty(TextCursor cursor)
 {
     REPEAT_IGNORING(parse_slash_segment, cursor);
 }
 
 //   path-absolute = "/" [ segment-nz *( "/" segment ) ]
-FileCursor parse_path_absolute(FileCursor cursor)
+TextCursor parse_path_absolute(TextCursor cursor)
 {
     char c = get_char(cursor);
     if (c != '/')
@@ -203,7 +203,7 @@ FileCursor parse_path_absolute(FileCursor cursor)
     {
         try
         {
-            FileCursor cursor2(parse_segment_nz(cursor));
+            TextCursor cursor2(parse_segment_nz(cursor));
             REPEAT_IGNORING(parse_slash_segment, cursor2);
         }
         catch(ParseError)
@@ -214,21 +214,21 @@ FileCursor parse_path_absolute(FileCursor cursor)
 }
 
 //   path-noscheme = segment-nz-nc *( "/" segment )
-FileCursor parse_path_noscheme(FileCursor cursor)
+TextCursor parse_path_noscheme(TextCursor cursor)
 {
-    FileCursor cursor2(parse_segment_nz_nc(cursor));
+    TextCursor cursor2(parse_segment_nz_nc(cursor));
     REPEAT_IGNORING(parse_slash_segment, cursor2);
 }
 
 //   path-rootless = segment-nz *( "/" segment )
-FileCursor parse_path_rootless(FileCursor cursor)
+TextCursor parse_path_rootless(TextCursor cursor)
 {
-    FileCursor cursor2(parse_segment_nz(cursor));
+    TextCursor cursor2(parse_segment_nz(cursor));
     REPEAT_IGNORING(parse_slash_segment, cursor2);
 }
 
 //   path-empty    = 0<pchar>
-FileCursor parse_path_empty(FileCursor cursor)
+TextCursor parse_path_empty(TextCursor cursor)
 {
     return cursor;
 }
@@ -238,7 +238,7 @@ FileCursor parse_path_empty(FileCursor cursor)
 //                 / path-noscheme   ; begins with a non-colon segment
 //                 / path-rootless   ; begins with a segment
 //                 / path-empty      ; zero characters
-FileCursor parse_path(FileCursor cursor)
+TextCursor parse_path(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_path_abempty, cursor);
     IGNORE_PARSE_ERROR(parse_path_absolute, cursor);
@@ -248,7 +248,7 @@ FileCursor parse_path(FileCursor cursor)
     throw ParseError();
 }
 // 250_255 = "25" 0-5
-FileCursor parse_250_255(FileCursor cursor)
+TextCursor parse_250_255(TextCursor cursor)
 {
     char c = get_char(cursor);
     if (c != '2')
@@ -264,7 +264,7 @@ FileCursor parse_250_255(FileCursor cursor)
 }
 
 // 200_249 = "2" 0-4 DIGIT
-FileCursor parse_200_249(FileCursor cursor)
+TextCursor parse_200_249(TextCursor cursor)
 {
     char c = get_char(cursor);
     if (c != '2')
@@ -279,7 +279,7 @@ FileCursor parse_200_249(FileCursor cursor)
 }
 
 // 100_199 = "1" DIGIT DIGIT
-FileCursor parse_100_199(FileCursor cursor)
+TextCursor parse_100_199(TextCursor cursor)
 {
     char c = get_char(cursor);
     if(c != '1')
@@ -288,7 +288,7 @@ FileCursor parse_100_199(FileCursor cursor)
 }
 
 // 10_99 = 1-9 DIGIT
-FileCursor parse_10_99(FileCursor cursor)
+TextCursor parse_10_99(TextCursor cursor)
 {
     char c = get_char(cursor);
     if ('1' <= c && c <= '9')
@@ -304,7 +304,7 @@ FileCursor parse_10_99(FileCursor cursor)
 //                 / 100_199     ; 100-199
 //                 / 200_249     ; 200-249
 //                 / 250_255     ; 250-255
-FileCursor parse_dec_octet(FileCursor cursor)
+TextCursor parse_dec_octet(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_250_255, cursor);
     IGNORE_PARSE_ERROR(parse_200_249, cursor);
@@ -315,7 +315,7 @@ FileCursor parse_dec_octet(FileCursor cursor)
 }
 
 //   reg_name_segment = *( unreserved / pct-encoded / sub-delims )
-FileCursor parse_reg_name_segment(FileCursor cursor)
+TextCursor parse_reg_name_segment(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_unreserved, cursor);
     IGNORE_PARSE_ERROR(parse_pct_encoded, cursor);
@@ -324,13 +324,13 @@ FileCursor parse_reg_name_segment(FileCursor cursor)
 }
 
 // reg_name = *(reg_name_segment)
-FileCursor parse_reg_name(FileCursor cursor)
+TextCursor parse_reg_name(TextCursor cursor)
 {
     REPEAT_IGNORING(parse_reg_name_segment, cursor);
 }
 
 //   IPv4address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
-FileCursor parse_ipv4address(FileCursor cursor)
+TextCursor parse_ipv4address(TextCursor cursor)
 {
     for (int i=0; i<3; i++)
     {
@@ -342,7 +342,7 @@ FileCursor parse_ipv4address(FileCursor cursor)
 }
 
 //   h16           = 1*4HEXDIG
-FileCursor parse_h16(FileCursor cursor)
+TextCursor parse_h16(TextCursor cursor)
 {
     cursor = parse_hexdigit(cursor);
     for (int i=0; i<3; i++)
@@ -360,7 +360,7 @@ FileCursor parse_h16(FileCursor cursor)
 }
 
 //   ls32          = ( h16 ":" h16 ) / IPv4address
-FileCursor parse_ls32(FileCursor cursor)
+TextCursor parse_ls32(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_ipv4address, cursor);
     cursor = parse_h16(cursor);
@@ -370,7 +370,7 @@ FileCursor parse_ls32(FileCursor cursor)
 }
 
 // h16_colon = h16 ':'
-FileCursor parse_h16_colon(FileCursor cursor)
+TextCursor parse_h16_colon(TextCursor cursor)
 {
     cursor = parse_h16(cursor);
     if(get_char(cursor) == ':')
@@ -379,14 +379,14 @@ FileCursor parse_h16_colon(FileCursor cursor)
         throw ParseError();
 }
 
-FileCursor parse_colon_h16(FileCursor cursor)
+TextCursor parse_colon_h16(TextCursor cursor)
 {
     if(get_char(cursor) != ':')
         throw ParseError();  
     return parse_h16(cursor);
 }
 
-FileCursor parse_n_h16_colon(FileCursor cursor, int n)
+TextCursor parse_n_h16_colon(TextCursor cursor, int n)
 {
     for (int i=0; i<n; i++)
     {
@@ -395,7 +395,7 @@ FileCursor parse_n_h16_colon(FileCursor cursor, int n)
     return cursor;
 }
 
-FileCursor parse_lt_n_h16_colon(FileCursor cursor, int n)
+TextCursor parse_lt_n_h16_colon(TextCursor cursor, int n)
 {
     for (int i=0; i<n; i++)
     {
@@ -412,7 +412,7 @@ FileCursor parse_lt_n_h16_colon(FileCursor cursor, int n)
 }
 
 // double_colon = ":" ":"
-FileCursor parse_double_colon(FileCursor cursor)
+TextCursor parse_double_colon(TextCursor cursor)
 {
     if (get_char(cursor) != ':')
         throw ParseError();
@@ -432,7 +432,7 @@ FileCursor parse_double_colon(FileCursor cursor)
 //                 / [ *4( h16 ":" ) h16 ] "::"              ls32
 //                 / [ *5( h16 ":" ) h16 ] "::"              h16
 //                 / [ *6( h16 ":" ) h16 ] "::"
-FileCursor parse_ipv6address(FileCursor cursor)
+TextCursor parse_ipv6address(TextCursor cursor)
 {
     try
     {
@@ -521,7 +521,7 @@ FileCursor parse_ipv6address(FileCursor cursor)
     throw ParseError();
 }
 
-FileCursor parse_unreserved_subdelims_colon(FileCursor cursor)
+TextCursor parse_unreserved_subdelims_colon(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_unreserved, cursor);
     IGNORE_PARSE_ERROR(parse_sub_delims, cursor);
@@ -531,20 +531,20 @@ FileCursor parse_unreserved_subdelims_colon(FileCursor cursor)
         throw ParseError();
 }
 
-FileCursor parse_at_least_one_unreserved_subdelims_colon(FileCursor cursor)
+TextCursor parse_at_least_one_unreserved_subdelims_colon(TextCursor cursor)
 {
     cursor = parse_unreserved_subdelims_colon(cursor);
     REPEAT_IGNORING(parse_unreserved, cursor);
 }
 
-FileCursor parse_at_least_one_hexdigit(FileCursor cursor)
+TextCursor parse_at_least_one_hexdigit(TextCursor cursor)
 {
     cursor = parse_hexdigit(cursor);
     REPEAT_IGNORING(parse_hexdigit, cursor);
 }
 
 //IPvFuture = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
-FileCursor parse_ipvfuture(FileCursor cursor)
+TextCursor parse_ipvfuture(TextCursor cursor)
 {
     if(get_char(cursor) != 'v')
         throw ParseError();
@@ -555,7 +555,7 @@ FileCursor parse_ipvfuture(FileCursor cursor)
 }
 
 //ipv6address_ipfuture =  IPv6address / IPvFuture  
-FileCursor parse_ipv6address_ipfuture(FileCursor cursor)
+TextCursor parse_ipv6address_ipfuture(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_ipv6address, cursor);
     IGNORE_PARSE_ERROR(parse_ipvfuture, cursor);
@@ -563,7 +563,7 @@ FileCursor parse_ipv6address_ipfuture(FileCursor cursor)
 }
 
 //   IP-literal    = "[" ipv6address_ipfuture "]"
-FileCursor parse_ip_literal(FileCursor cursor)
+TextCursor parse_ip_literal(TextCursor cursor)
 {
     if(get_char(cursor) != '[')
         throw ParseError();
@@ -575,13 +575,13 @@ FileCursor parse_ip_literal(FileCursor cursor)
 }
 
 //port          = *DIGIT
-FileCursor parse_port(FileCursor cursor)
+TextCursor parse_port(TextCursor cursor)
 {
     REPEAT_IGNORING(parse_digit, cursor);
 }
 
 //host = IP-literal / IPv4address / reg-name
-FileCursor parse_host(FileCursor cursor)
+TextCursor parse_host(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_ip_literal, cursor);
     IGNORE_PARSE_ERROR(parse_ipv4address, cursor);
@@ -590,7 +590,7 @@ FileCursor parse_host(FileCursor cursor)
 }
 
 //userinfo_segment = unreserved / pct-encoded / sub-delims / ":" 
-FileCursor parse_userinfo_segment(FileCursor cursor)
+TextCursor parse_userinfo_segment(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_unreserved, cursor);
     IGNORE_PARSE_ERROR(parse_pct_encoded, cursor);
@@ -602,17 +602,17 @@ FileCursor parse_userinfo_segment(FileCursor cursor)
 }
 
 //userinfo      = *user_info_segment
-FileCursor parse_userinfo(FileCursor cursor)
+TextCursor parse_userinfo(TextCursor cursor)
 {
     REPEAT_IGNORING(parse_userinfo_segment, cursor);
 }
 
 //authority     = [ userinfo "@" ] host [ ":" port ]
-FileCursor parse_authority(FileCursor cursor)
+TextCursor parse_authority(TextCursor cursor)
 {
     try
     {
-        FileCursor cursor_copy(parse_userinfo(cursor));
+        TextCursor cursor_copy(parse_userinfo(cursor));
         if(get_char(cursor_copy) != '@')
             throw ParseError();
         cursor = cursor_copy;
@@ -623,7 +623,7 @@ FileCursor parse_authority(FileCursor cursor)
     cursor = parse_host(cursor);
     try
     {
-        FileCursor cursor_copy2(cursor);
+        TextCursor cursor_copy2(cursor);
         if(get_char(cursor_copy2) != ':')
             throw ParseError();
         cursor = parse_port(cursor_copy2);
@@ -635,7 +635,7 @@ FileCursor parse_authority(FileCursor cursor)
 }
 
 //parse_hier_part_case = "//" authority path-abempty
-FileCursor parse_hier_part_case(FileCursor cursor)
+TextCursor parse_hier_part_case(TextCursor cursor)
 {
     if (get_char(cursor) != '/')
         throw ParseError();
@@ -649,7 +649,7 @@ FileCursor parse_hier_part_case(FileCursor cursor)
 //              / path-absolute
 //              / path-rootless
 //              / path-empty
-FileCursor parse_hier_part(FileCursor cursor)
+TextCursor parse_hier_part(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_hier_part_case, cursor);
     IGNORE_PARSE_ERROR(parse_path_absolute, cursor);
@@ -659,7 +659,7 @@ FileCursor parse_hier_part(FileCursor cursor)
 }
 
 // scheme_element =  ALPHA / DIGIT / "+" / "-" / "." 
-FileCursor parse_scheme_element(FileCursor cursor)
+TextCursor parse_scheme_element(TextCursor cursor)
 {
     IGNORE_PARSE_ERROR(parse_alpha, cursor);
     IGNORE_PARSE_ERROR(parse_digit, cursor);
@@ -671,14 +671,14 @@ FileCursor parse_scheme_element(FileCursor cursor)
 }
 
 //scheme        = ALPHA *scheme_element
-FileCursor parse_scheme(FileCursor cursor)
+TextCursor parse_scheme(TextCursor cursor)
 {
     cursor = parse_alpha(cursor);
     REPEAT_IGNORING(parse_scheme_element, cursor);
 }
 
 //uri = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
-FileCursor parse_uri(FileCursor cursor)
+TextCursor parse_uri(TextCursor cursor)
 {
     cursor = parse_scheme(cursor);
     if(get_char(cursor) != ':')
@@ -686,7 +686,7 @@ FileCursor parse_uri(FileCursor cursor)
     cursor = parse_hier_part(cursor);
     try
     {
-        FileCursor cursor_copy(cursor);
+        TextCursor cursor_copy(cursor);
         if (get_char(cursor_copy) != '?')
             throw ParseError();
         cursor = parse_query_fragment(cursor_copy);
@@ -696,7 +696,7 @@ FileCursor parse_uri(FileCursor cursor)
     }
     try
     {
-        FileCursor cursor_copy2(cursor);
+        TextCursor cursor_copy2(cursor);
         if (get_char(cursor_copy2) != '#')
             throw ParseError();
         cursor = parse_query_fragment(cursor);
@@ -707,14 +707,14 @@ FileCursor parse_uri(FileCursor cursor)
     return cursor;
 }
 
-void parse_file(FileCursor cursor)
+void parse_file(TextCursor cursor)
 {
     int uri_length;
     while(!cursor.eof())
     {
         try
         {
-           FileCursor stop_cursor(parse_uri(cursor));
+           TextCursor stop_cursor(parse_uri(cursor));
            uri_length = stop_cursor.get_offset() - cursor.get_offset();
            char uri[uri_length + 1];
            cursor.gets(uri_length, uri);

@@ -18,15 +18,15 @@ public:
     virtual void gets(unsigned long, int, char *);
 };
 
-class FileCursor 
+class TextCursor 
 {
     std::shared_ptr<File> file;
     unsigned long offset;
     
 public:
-    FileCursor(File * file);
-    FileCursor(const FileCursor& orig);
-    virtual ~FileCursor();
+    TextCursor(File * file);
+    TextCursor(const TextCursor& orig);
+    virtual ~TextCursor();
     
     virtual bool eof();
     virtual unsigned long get_offset();

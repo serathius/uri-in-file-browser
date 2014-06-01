@@ -13,7 +13,7 @@ int main(int argc, const char** argv)
         try
         {
            File * file = new File(argv[1]); 
-           FileCursor cursor(file);
+           TextCursor cursor(file);
            parse_file(cursor);
         }
         catch(FileNotExistsError)

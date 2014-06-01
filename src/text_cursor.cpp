@@ -1,4 +1,4 @@
-#include "../include/file_cursor.h"
+#include "../include/text_cursor.h"
 #include "../include/exceptions.h"
 
 File::File(const char * file_name)
@@ -45,40 +45,40 @@ void File::gets(unsigned long offset, int length, char * str)
     fgets(str, length+1, this->file);
 }
 
-FileCursor::FileCursor(File * file)
+TextCursor::TextCursor(File * file)
 {
     this->file = std::shared_ptr<File>(file);
     this->offset = 0;
 }
 
-FileCursor::FileCursor(const FileCursor& orig) 
+TextCursor::TextCursor(const TextCursor& orig) 
 {
     this->file = std::move(orig.file);
     this->offset = orig.offset;
 }
 
-FileCursor::~FileCursor() 
+TextCursor::~TextCursor() 
 {
    
 }
 
-bool FileCursor::eof()
+bool TextCursor::eof()
 {
     return this->file.get()->eof(this->offset);
 }
 
-unsigned long FileCursor::get_offset() 
+unsigned long TextCursor::get_offset() 
 {
     return this->offset;
 }
 
-void FileCursor::gets(int length, char * str) 
+void TextCursor::gets(int length, char * str) 
 {
     this->file.get()->gets(this->offset, length, str);
     this->offset += length;
 }
 
-char FileCursor::get() 
+char TextCursor::get() 
 {
     return this->file.get()->get(this->offset++);
 }
