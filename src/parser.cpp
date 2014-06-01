@@ -395,22 +395,6 @@ TextCursor parse_n_h16_colon(TextCursor cursor, int n)
     return cursor;
 }
 
-TextCursor parse_lt_n_h16_colon(TextCursor cursor, int n)
-{
-    for (int i=0; i<n; i++)
-    {
-        try
-        {
-            cursor = parse_h16_colon(cursor);
-        }
-        catch(ParseError)
-        {
-            return cursor;
-        }
-    }
-    return cursor;
-}
-
 // double_colon = ":" ":"
 TextCursor parse_double_colon(TextCursor cursor)
 {
