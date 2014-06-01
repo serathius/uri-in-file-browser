@@ -7,22 +7,22 @@ OBJECTS = $(SOURCES:.cpp=.o)
 CFLAGS = -std=c++11
 	
 all : $(OBJECTS)
-	@g++ $(CFLAGS) $(OBJECTS) src/main.cpp -o url-in-file-browser.o
+	@$(CXX) $(CFLAGS) $(OBJECTS) src/main.cpp -o url-in-file-browser.o
 
 .cpp.o:
-	@g++ $(CFLAGS) -c $< -o $@
+	@$(CXX) $(CFLAGS) -c $< -o $@
 
 test : libgtest.a $(OBJECTS)
-	@g++ $(CFLAGS) $(TEST_SYSTEM_FLAGS) -pthread tests/test_main.cpp $(TESTS) $(OBJECTS) libgtest.a -o test.o
+	@$(CXX) $(CFLAGS) $(TEST_SYSTEM_FLAGS) -pthread tests/test_main.cpp $(TESTS) $(OBJECTS) libgtest.a -o test.o
 
 libgtest.a: gmock-all.o gtest-all.o
 	@ar -rv libgtest.a gmock-all.o gtest-all.o 
 	
 gmock-all.o:
-	@g++ $(TEST_SYSTEM_FLAGS) $(TEST_I_FLAGS) -c gmock-1.7.0/src/gmock-all.cc
+	@$(CXX) $(TEST_SYSTEM_FLAGS) $(TEST_I_FLAGS) -c gmock-1.7.0/src/gmock-all.cc
 
 gtest-all.o:
-	@g++ $(TEST_SYSTEM_FLAGS) $(TEST_I_FLAGS) -c gtest-1.7.0/src/gtest-all.cc
+	@$(CXX) $(TEST_SYSTEM_FLAGS) $(TEST_I_FLAGS) -c gtest-1.7.0/src/gtest-all.cc
 
 clean:
 	@-rm url-in-file-browser.o 2>/dev/null || true
