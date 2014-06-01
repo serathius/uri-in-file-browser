@@ -3,6 +3,6 @@
 
 #include "text_cursor.h"
 
-void parse_file(TextCursor cursor);
+void parse_file(TextCursor);
 
 #endif	/* PARSER_H */

@@ -16,8 +16,9 @@ class FileAccess : public Access
 {
     FILE * file;
     unsigned long offset;
-    inline void checkout(unsigned long offset);
     
+    inline void checkout(unsigned long offset);
+
 public:
     FileAccess(const char*);
     virtual ~FileAccess();
