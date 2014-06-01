@@ -425,33 +425,25 @@ TextCursor parse_ipv6address(TextCursor cursor)
     catch(ParseError)
     {
     }
-    bool h16;
+    int n = 0;
+    bool h16 = false;
     try
     {
         cursor = parse_h16(cursor);
         h16 = true;
+        for (; n<6; n++)
+        {
+                cursor = parse_colon_h16(cursor);
+        }
     }
     catch(ParseError)
     {
-        h16 = false;
     }
     
-    int n = 0;
-    for (; n<7; n++)
-    {
-        try
-        {
-            cursor = parse_colon_h16(cursor);
-        }
-        catch(ParseError)
-        { 
-            break;
-        }
-    }
     cursor = parse_double_colon(cursor);
     try
     {
-        return parse_ls32(parse_n_h16_colon(cursor, 5 - h16));
+        return parse_ls32(parse_n_h16_colon(cursor, 5 - (int)h16));
     }
     catch(ParseError)
     {
