@@ -12,7 +12,7 @@ int main(int argc, const char** argv)
     {
         try
         {
-           File * file = new File(argv[1]); 
+           FileAccess * file = new FileAccess(argv[1]); 
            TextCursor cursor(file);
            parse_file(cursor);
         }

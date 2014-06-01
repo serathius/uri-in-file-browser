@@ -4,15 +4,23 @@
 #include <cstdio>
 #include <memory>
 
-class File
+class Access
+{
+public:
+    virtual bool eof(unsigned long) = 0;
+    virtual char get(unsigned long) = 0;
+    virtual void gets(unsigned long, int, char *) = 0;
+};
+
+class FileAccess : public Access
 {
     FILE * file;
     unsigned long offset;
     inline void checkout(unsigned long offset);
     
 public:
-    File(const char*);
-    virtual ~File();
+    FileAccess(const char*);
+    virtual ~FileAccess();
     virtual bool eof(unsigned long);
     virtual char get(unsigned long);
     virtual void gets(unsigned long, int, char *);
@@ -20,11 +28,11 @@ public:
 
 class TextCursor 
 {
-    std::shared_ptr<File> file;
+    std::shared_ptr<Access> file;
     unsigned long offset;
     
 public:
-    TextCursor(File * file);
+    TextCursor(Access * file);
     TextCursor(const TextCursor& orig);
     virtual ~TextCursor();
     

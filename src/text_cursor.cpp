@@ -1,7 +1,7 @@
 #include "../include/text_cursor.h"
 #include "../include/exceptions.h"
 
-File::File(const char * file_name)
+FileAccess::FileAccess(const char * file_name) : Access()
 {
     this->file = fopen(file_name, "r");
     if (this->file == nullptr)
@@ -11,12 +11,12 @@ File::File(const char * file_name)
     this->offset = 0;
 }
 
-File::~File()
+FileAccess::~FileAccess()
 {
     fclose(this->file);
 }
 
-void File::checkout(unsigned long offset)
+void FileAccess::checkout(unsigned long offset)
 {
     if(offset != this->offset)
     {
@@ -25,29 +25,29 @@ void File::checkout(unsigned long offset)
     }
 }
 
-bool File::eof(unsigned long offset)
+bool FileAccess::eof(unsigned long offset)
 {
     checkout(offset);
     return feof(this->file);
 }
 
-char File::get(unsigned long offset)
+char FileAccess::get(unsigned long offset)
 {
     checkout(offset);
     this->offset++;
     return getc(this->file);
 }
 
-void File::gets(unsigned long offset, int length, char * str)
+void FileAccess::gets(unsigned long offset, int length, char * str)
 {
     checkout(offset);
     this->offset += length;
     fgets(str, length+1, this->file);
 }
 
-TextCursor::TextCursor(File * file)
+TextCursor::TextCursor(Access * file)
 {
-    this->file = std::shared_ptr<File>(file);
+    this->file = std::shared_ptr<Access>(file);
     this->offset = 0;
 }
 
