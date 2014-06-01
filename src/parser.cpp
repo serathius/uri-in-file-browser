@@ -707,9 +707,18 @@ TextCursor parse_uri(TextCursor cursor)
     return cursor;
 }
 
+void save_uri(int n, const char * uri, int offset)
+{
+    char file_name[4];
+    sprintf(file_name, "%04d", n);
+    FILE * file = fopen(file_name, "w");
+    fprintf(file, "%s\n%d", uri, offset);
+    fclose(file);
+}
+
 void parse_file(TextCursor cursor)
 {
-    int uri_length;
+    int uri_length, i = 0, pos;
     while(!cursor.eof())
     {
         try
@@ -717,8 +726,10 @@ void parse_file(TextCursor cursor)
            TextCursor stop_cursor(parse_uri(cursor));
            uri_length = stop_cursor.get_offset() - cursor.get_offset();
            char uri[uri_length + 1];
+           pos = cursor.get_offset();
            cursor.gets(uri_length, uri);
-           printf("%s\n", uri);
+           save_uri(i++, uri, pos);
+           printf("%4d %s\n", pos, uri);
            cursor = stop_cursor;
         }
         catch(ParseError)
