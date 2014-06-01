@@ -8,5 +8,10 @@ class ParseError : public std::exception
     
 };
 
+class FileNotExistsError : public std::exception
+{
+    
+};
+
 #endif	/* EXCEPTIONS_H */
 
