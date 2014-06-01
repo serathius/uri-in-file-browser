@@ -653,6 +653,20 @@ TextCursor parse_scheme(TextCursor cursor)
     REPEAT_IGNORING(parse_scheme_element, cursor);
 }
 
+TextCursor parse_query(TextCursor cursor)
+{
+    if (get_char(cursor) != '?')
+        throw ParseError();
+    return parse_query_fragment(cursor);
+}
+
+TextCursor parse_fragment(TextCursor cursor)
+{
+    if (get_char(cursor) != '#')
+        throw ParseError();
+    return parse_query_fragment(cursor);
+}
+
 //uri = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
 TextCursor parse_uri(TextCursor cursor)
 {
@@ -662,20 +676,14 @@ TextCursor parse_uri(TextCursor cursor)
     cursor = parse_hier_part(cursor);
     try
     {
-        TextCursor cursor_copy(cursor);
-        if (get_char(cursor_copy) != '?')
-            throw ParseError();
-        cursor = parse_query_fragment(cursor_copy);
+        cursor = parse_query(cursor);
     }
     catch(ParseError)
     {
     }
     try
     {
-        TextCursor cursor_copy2(cursor);
-        if (get_char(cursor_copy2) != '#')
-            throw ParseError();
-        cursor = parse_query_fragment(cursor);
+        cursor = parse_fragment(cursor);
     }
     catch(ParseError)
     {
