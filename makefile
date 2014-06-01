@@ -1,6 +1,6 @@
 TEST_SYSTEM_FLAGS = -isystem gtest-1.7.0/include -isystem gmock-1.7.0/include 
 TEST_I_FLAGS = -I gtest-1.7.0 -I gmock-1.7.0
-TESTS = tests/test_ipv6.cpp
+TESTS = tests/test_ipv6.cpp tests/test_uri.cpp
 TEST_OBJECTS = $(TESTS:.cpp=.o)
 SOURCES = src/text_cursor.cpp src/parser.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
