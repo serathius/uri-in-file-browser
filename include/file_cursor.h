@@ -4,14 +4,27 @@
 #include <cstdio>
 #include <memory>
 
+class File
+{
+    FILE * file;
+    unsigned long offset;
+    inline void checkout(unsigned long offset);
+    
+public:
+    File(const char*);
+    virtual ~File();
+    virtual bool eof(unsigned long);
+    virtual char get(unsigned long);
+    virtual void gets(unsigned long, int, char *);
+};
+
 class FileCursor 
 {
-    bool _eof;
-    std::shared_ptr<FILE> file;
+    std::shared_ptr<File> file;
     unsigned long offset;
     
 public:
-    FileCursor(const char * filename);
+    FileCursor(File * file);
     FileCursor(const FileCursor& orig);
     virtual ~FileCursor();
     

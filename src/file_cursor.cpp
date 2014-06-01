@@ -1,18 +1,60 @@
 #include "../include/file_cursor.h"
+#include "../include/exceptions.h"
 
-FileCursor::FileCursor(const char * filename)
+File::File(const char * file_name)
 {
-    FILE * file = fopen(filename, "r");
-    this->file = std::shared_ptr<FILE>(file, fclose);
+    this->file = fopen(file_name, "r");
+    if (this->file == nullptr)
+    {
+        throw FileNotExistsError();
+    }
     this->offset = 0;
-    this->_eof = false;
+}
+
+File::~File()
+{
+    fclose(this->file);
+}
+
+void File::checkout(unsigned long offset)
+{
+    if(offset != this->offset)
+    {
+        fseek(this->file, offset, SEEK_SET);
+        this->offset = offset;
+    }
+}
+
+bool File::eof(unsigned long offset)
+{
+    checkout(offset);
+    return feof(this->file);
+}
+
+char File::get(unsigned long offset)
+{
+    checkout(offset);
+    this->offset++;
+    return getc(this->file);
+}
+
+void File::gets(unsigned long offset, int length, char * str)
+{
+    checkout(offset);
+    this->offset += length;
+    fgets(str, length+1, this->file);
+}
+
+FileCursor::FileCursor(File * file)
+{
+    this->file = std::shared_ptr<File>(file);
+    this->offset = 0;
 }
 
 FileCursor::FileCursor(const FileCursor& orig) 
 {
     this->file = std::move(orig.file);
     this->offset = orig.offset;
-    this->_eof = orig._eof;
 }
 
 FileCursor::~FileCursor() 
@@ -22,7 +64,7 @@ FileCursor::~FileCursor()
 
 bool FileCursor::eof()
 {
-    return this->_eof;
+    return this->file.get()->eof(this->offset);
 }
 
 unsigned long FileCursor::get_offset() 
@@ -32,16 +74,11 @@ unsigned long FileCursor::get_offset()
 
 void FileCursor::gets(int length, char * str) 
 {
-    fseek(this->file.get(), this->offset, SEEK_SET);
+    this->file.get()->gets(this->offset, length, str);
     this->offset += length;
-    fgets(str, length+1, this->file.get());
-    this->_eof = feof(this->file.get());
 }
 
 char FileCursor::get() 
 {
-    fseek(this->file.get(), this->offset++, SEEK_SET);
-    char c = getc(this->file.get());
-    this->_eof = feof(this->file.get());
-    return c;
+    return this->file.get()->get(this->offset++);
 }
