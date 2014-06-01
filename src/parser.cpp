@@ -707,7 +707,7 @@ FileCursor parse_uri(FileCursor cursor)
     return cursor;
 }
 
-FileCursor parse_file(FileCursor cursor)
+void parse_file(FileCursor cursor)
 {
     int uri_length;
     while(!cursor.eof())
