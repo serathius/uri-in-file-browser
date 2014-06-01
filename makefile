@@ -1,6 +1,6 @@
 TEST_SYSTEM_FLAGS = -isystem gtest-1.7.0/include -isystem gmock-1.7.0/include 
 TEST_I_FLAGS = -I gtest-1.7.0 -I gmock-1.7.0
-TESTS = tests/test_simple.cpp
+TESTS = tests/test_ipv6.cpp
 TEST_OBJECTS = $(TESTS:.cpp=.o)
 SOURCES = src/text_cursor.cpp src/parser.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
@@ -12,8 +12,8 @@ all : $(OBJECTS)
 .cpp.o:
 	@g++ $(CFLAGS) -c $< -o $@
 
-test : libgtest.a
-	@g++ $(TEST_SYSTEM_FLAGS) -pthread tests/test_main.cpp $(TESTS) libgtest.a -o test.o
+test : libgtest.a $(OBJECTS)
+	@g++ $(CFLAGS) $(TEST_SYSTEM_FLAGS) -pthread tests/test_main.cpp $(TESTS) $(OBJECTS) libgtest.a -o test.o
 
 libgtest.a: gmock-all.o gtest-all.o
 	@ar -rv libgtest.a gmock-all.o gtest-all.o 

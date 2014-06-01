@@ -5,4 +5,6 @@
 
 void parse_file(TextCursor);
 
+TextCursor parse_ipv6address(TextCursor);
+
 #endif	/* PARSER_H */
