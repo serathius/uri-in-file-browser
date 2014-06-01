@@ -27,6 +27,19 @@ public:
     virtual void gets(unsigned long, int, char *);
 };
 
+class StringAccess : public Access
+{
+    const char * str;
+    unsigned int length;
+    
+public:
+    StringAccess(const char*, unsigned int);
+    virtual ~StringAccess();
+    virtual bool eof(unsigned long);
+    virtual char get(unsigned long);
+    virtual void gets(unsigned long, int, char *);
+};
+
 class TextCursor 
 {
     std::shared_ptr<Access> file;

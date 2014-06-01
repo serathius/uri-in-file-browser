@@ -45,6 +45,35 @@ void FileAccess::gets(unsigned long offset, int length, char * str)
     fgets(str, length+1, this->file);
 }
 
+StringAccess::StringAccess(const char* str, unsigned int length)
+{
+    this->str = str;
+    this->length = length;
+}
+
+StringAccess::~StringAccess()
+{
+    delete [] this->str;
+}
+
+bool StringAccess::eof(unsigned long offset)
+{
+    return this->length < offset;
+}
+
+char StringAccess::get(unsigned long offset)
+{
+    return this->str[offset];
+}
+
+void StringAccess::gets(unsigned long offset, int length, char * str)
+{
+    for (int i=0; i<length; i++)
+    {
+        str[i] = this->str[offset + i];
+    }
+}
+
 TextCursor::TextCursor(Access * file)
 {
     this->file = std::shared_ptr<Access>(file);
