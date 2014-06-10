@@ -700,21 +700,41 @@ void save_uri(int n, const char * uri, int offset)
     fclose(file);
 }
 
-void parse_file(TextCursor cursor)
+std::string get_scheme(TextCursor cursor)
+{
+    int scheme_length;
+    TextCursor scheme_cursor(parse_scheme(cursor));
+    scheme_length = scheme_cursor.get_offset() - cursor.get_offset();
+    char scheme[scheme_length + 1];
+    cursor.gets(scheme_length, scheme);
+    return scheme;
+}
+
+void parse_file(TextCursor cursor, int min_length, 
+                std::set<std::string>& schemas)
 {
     int uri_length, i = 0, pos;
     while(!cursor.eof())
     {
         try
         {
-           TextCursor stop_cursor(parse_uri(cursor));
-           uri_length = stop_cursor.get_offset() - cursor.get_offset();
-           char uri[uri_length + 1];
-           pos = cursor.get_offset();
-           cursor.gets(uri_length, uri);
-           save_uri(i++, uri, pos);
-           printf("%4d %s\n", pos, uri);
-           cursor = stop_cursor;
+            TextCursor stop_cursor(parse_uri(cursor));
+            if (schemas.size() > 0)
+            {
+                std::string scheme = get_scheme(cursor);
+                if(schemas.count(scheme) == 0)
+                    throw ParseError();
+            }
+            uri_length = stop_cursor.get_offset() - cursor.get_offset();
+            char uri[uri_length + 1];
+            pos = cursor.get_offset();
+            cursor.gets(uri_length, uri);
+            if(uri_length < min_length)
+                throw ParseError();
+            save_uri(i++, uri, pos);
+            printf("%4d %s\n", pos, uri);
+            cursor = stop_cursor;
+
         }
         catch(ParseError)
         {
