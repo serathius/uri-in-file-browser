@@ -1,6 +1,8 @@
 #include "../include/parser.h"
 #include "../include/exceptions.h"
 
+#include<cmath>
+
 #define IGNORE_PARSE_ERROR(FUN, ARG)\
 try                                 \
 {                                   \
@@ -693,8 +695,12 @@ TextCursor parse_uri(TextCursor cursor)
 
 void save_uri(int n, const char * uri, int offset)
 {
-    char file_name[4];
-    sprintf(file_name, "%04d", n);
+    int letter_count = log10(n) + 1;
+    letter_count = letter_count < 4? 4: letter_count;
+    char file_name[letter_count];
+    char format[(int) log10(letter_count) + 1];
+    sprintf(format, "%d", letter_count);
+    sprintf(file_name, ("%0" + std::string(format) + "d").c_str(), n);
     FILE * file = fopen(file_name, "w");
     fprintf(file, "%s\n%d", uri, offset);
     fclose(file);
