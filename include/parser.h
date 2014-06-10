@@ -2,6 +2,7 @@
 #define	PARSER_H
 
 #include<set>
+#include<string>
 
 #include "text_cursor.h"
 
