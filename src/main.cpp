@@ -6,7 +6,7 @@ int main(int argc, const char** argv)
     if(argc != 2)
     {
         printf("Arguments: file name.\n");
-        exit(1);
+        return 1;
     }
     else
     {
@@ -19,7 +19,8 @@ int main(int argc, const char** argv)
         catch(FileNotExistsError)
         {
             printf("File not exists.\n");
-            exit(2);
+            return 2;
         }
     }
+    return 0;
 }
