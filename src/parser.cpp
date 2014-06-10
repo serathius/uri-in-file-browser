@@ -735,12 +735,12 @@ void parse_file(TextCursor cursor, int min_length,
             char uri[uri_length + 1];
             pos = cursor.get_offset();
             cursor.gets(uri_length, uri);
-            if(uri_length < min_length)
-                throw ParseError();
-            save_uri(i++, uri, pos);
-            printf("%4d %s\n", pos, uri);
-            cursor = stop_cursor;
-
+            if(uri_length >= min_length)
+            {
+                save_uri(i++, uri, pos);
+                printf("%4d %s\n", pos, uri);
+                cursor = stop_cursor;
+            }
         }
         catch(ParseError)
         {
